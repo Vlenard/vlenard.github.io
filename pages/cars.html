@@ -1,0 +1,19 @@
+<ul>
+    {{#each cars}}
+    <li>
+        <div>
+            <img src="../icons/taxi-front.svg" alt="taxi">
+            <h2>{{brand}} - {{model}}</h2>
+            {{#if electric}}
+                <p>electric</p>
+            {{/if}}
+            <ul>
+                <li>{{fuelUse}}</li>
+                <li>{{dayOfCommission}}</li>
+                <li>{{owner}}</li>
+                <a data-link page="car" id="{{id}}">Edit</a>
+            </ul>
+        </div>
+    </li>
+    {{/each}}
+</ul>
