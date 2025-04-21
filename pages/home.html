@@ -1,3 +1,21 @@
-<div>
-    Hello content {{name}}
-</div>
+<ul class="car-list">
+    {{#each cars}}
+    <li class="car-item">
+        <div class="car-card">
+            <img src="../icons/taxi-front.svg" alt="taxi" class="car-image">
+            <h2 class="car-title">{{brand}} - {{model}}</h2>
+            {{#if electric}}
+            <span class="car-electric">Electric</span>
+            {{/if}}
+            <ul class="car-details">
+                <li><strong>Fuel Usage:</strong> {{fuelUse}}</li>
+                <li><strong>Commissioned:</strong> {{dayOfCommission}}</li>
+                <li><strong>Owner:</strong> {{owner}}</li>
+                <li>
+                    <a data-link data-page="car" data-id="{{id}}" class="edit-link">Edit</a>
+                </li>
+            </ul>
+        </div>
+    </li>
+    {{/each}}
+</ul>

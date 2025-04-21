@@ -1,12 +1,35 @@
-<div>
-    <img src="../icons/taxi-front.svg" alt="taxi">
-    <h2>{{brand}} - {{model}}</h2>
-    {{#if electric}}
-        <p>electric</p>
-    {{/if}}
-    <ul>
-        <li>{{fuelUse}}</li>
-        <li>{{dayOfCommission}}</li>
-        <li>{{owner}}</li>
+<div class="car-details-page">
+  <div class="car-detail-card">
+    <img src="../icons/taxi-front.svg" alt="taxi" class="car-detail-image">
+
+    <h2 class="car-detail-title">
+      <input type="text" class="car-detail-input" value="{{brand}} - {{model}}" id="carModel">
+    </h2>
+
+    <div class="car-electric">
+      <label for="electricCar">Electric</label>
+      <input type="checkbox" id="electricCar" class="car-electric-checkbox" {{#if electric}}checked{{/if}}>
+    </div>
+
+    <ul class="car-detail-list">
+      <li>
+        <strong>Fuel Usage:</strong>
+        <input type="text" class="car-detail-input" value="{{fuelUse}}" id="fuelUse">
+      </li>
+      <li>
+        <strong>Commissioned On:</strong>
+        <input type="date" class="car-detail-input" value="{{dayOfCommission}}" id="commissionDate">
+      </li>
+      <li>
+        <strong>Owner:</strong>
+        <input type="text" class="car-detail-input" value="{{owner}}" id="owner">
+      </li>
     </ul>
+
+    <div class="car-actions">
+      <button data-link data-page="" class="save-button">Back</button>
+      <button class="save-button" id="btn-delete">Delete</button>
+      <button class="save-button" id="btn-save">Save</button>
+    </div>
+  </div>
 </div>

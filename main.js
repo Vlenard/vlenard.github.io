@@ -5,7 +5,7 @@ btnCreate.onclick = () => {
   Router.navigate({page: "create"});
 };
 
-Router.onPage('cars', async (html) => {
+Router.onPage('home', async (html) => {
 
   try {
     const res = await api("car");
@@ -16,12 +16,12 @@ Router.onPage('cars', async (html) => {
   }
 });
 
-Router.onPage('car', async (html, {id}) => {
-
+Router.onPage('car', async (html, {id}, hydrate) => {
   try {
     const res = await api(`car/${id}`);
     
     render(root, inject(html, await res.json()));
+    hydrate();
   } catch (error) {
     renderError(root, `Error while loading car with id ${id}`);
   }

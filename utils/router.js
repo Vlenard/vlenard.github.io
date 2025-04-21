@@ -27,19 +27,19 @@ window.addEventListener('popstate', () => {
  * @param {string} page - The page name.
  * @returns {string}
  */
-const cacheKey = (page) => `RouterCache:${page}`;
+const cacheKey = (page, type = 'html') => `RouterCache:${type}:${page}`;
 
 /**
  * Retrieves a cached HTML page (from memory or sessionStorage).
  * @param {string} page - Page name to retrieve.
  * @returns {string|null}
  */
-const getCachedPage = (page) => {
+const getCachedPage = (page, type = 'html') => {
     if (usePersistentCache) {
-        const cached = sessionStorage.getItem(cacheKey(page));
+        const cached = sessionStorage.getItem(cacheKey(page, type));
         if (cached) return cached;
     }
-    return pageCache.get(page) || null;
+    return pageCache.get(`${type}:${page}`) || null;
 };
 
 /**
@@ -47,11 +47,11 @@ const getCachedPage = (page) => {
  * @param {string} page - Page name to cache.
  * @param {string} html - HTML content to cache.
  */
-const setCachedPage = (page, html) => {
+const setCachedPage = (page, content, type = 'html') => {
     if (usePersistentCache) {
-        sessionStorage.setItem(cacheKey(page), html);
+        sessionStorage.setItem(cacheKey(page, type), content);
     } else {
-        pageCache.set(page, html);
+        pageCache.set(`${type}:${page}`, content);
     }
 };
 
@@ -139,34 +139,67 @@ const handleRouteChange = async () => {
     const params = getParams();
     const page = params.page || 'home';
     const handler = pageHandlers.get(page);
-
     let html = getCachedPage(page);
 
     try {
-        // If not cached, fetch and store
         if (!html) {
             const response = await fetch(`pages/${page}.html`);
             html = await response.text();
             setCachedPage(page, html);
         }
 
+        const hydrate = await loadPageScript(page); // 🔹 Load script early
+
         if (typeof handler === 'function') {
-            handler(html, params);
+            handler(html, params, hydrate); // 🔹 Pass to callback
         } else {
             const root = ref("root") || document.body;
             render(root, inject(html, params));
+            hydrate(); // 🔹 Execute if no custom callback
         }
     } catch (err) {
         console.error(`Failed to load page: pages/${page}.html`, err);
         const errorHtml = `<h2>Error loading page: ${page}</h2>`;
 
         if (typeof handler === 'function') {
-            handler(errorHtml, params);
+            handler(errorHtml, params, () => { }); // 🔹 Fallback no-op
         } else {
             const root = ref("root") || document.body;
             render(root, errorHtml);
         }
     }
+};
+
+/**
+ * Loads and caches the corresponding JS file for a page.
+ * Returns a function that executes the script when called.
+ *
+ * @param {string} page - Page name.
+ * @returns {Promise<() => void>} - A function that runs the JS, or no-op if not found.
+ */
+const loadPageScript = async (page) => {
+    let jsCode = getCachedPage(page, 'js');
+
+    if (!jsCode) {
+        try {
+            const jsResponse = await fetch(`scripts/${page}.js`);
+            if (jsResponse.ok) {
+                jsCode = await jsResponse.text();
+                setCachedPage(page, jsCode, 'js');
+            }
+        } catch (err) {
+            console.warn(`JS load failed for page: ${page}`, err);
+        }
+    }
+    return () => {
+        if (jsCode) {
+            try {
+                eval(jsCode);
+            } catch (e) {
+                console.error(`Error executing JS for page: ${page}`, e);
+            }
+        }
+    };
 };
 
 /**

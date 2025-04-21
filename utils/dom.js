@@ -3,20 +3,21 @@
  * Extracts query params from attributes and navigates using Router.
  */
 document.addEventListener('click', (e) => {
-    const link = e.target.closest('a[data-link]');
-    if (!link) return;
+    const target = e.target.closest("[data-link]");
+    if (!target) return;
 
     e.preventDefault();
 
     const params = {};
-    for (const attr of link.attributes) {
-        if (attr.name !== 'href' && attr.name !== 'data-link') {
-            params[attr.name] = attr.value;
+    for (const attr of target.attributes) {
+        if (attr.name !== 'href' && attr.name !== 'data-link' && attr.name.startsWith("data-")) {
+            params[attr.name.split("-")[1]] = attr.value;
         }
     }
 
     Router.navigate(params);
 });
+
 
 /**
  * Escapes a string for safe insertion into HTML.
@@ -41,7 +42,7 @@ const escapeHtml = (unsafe) => {
  * Syntax supported:
  * - {{ key }} – variable injection (escaped)
  * - {{#if key}}...{{/if}} – conditional rendering
- * - {{#each list}}...{{/each}} – loop over arrays
+ * - {{#each list}}...{{/each}} – loop over arrays. nested loops not supported
  * - a[data-link page="name" attr="{{key}}"] generate link
  * 
  * @param {string} html - The HTML template.
@@ -49,16 +50,16 @@ const escapeHtml = (unsafe) => {
  * @returns {string} The final HTML string with all parameters injected.
  */
 const inject = (html, params = {}) => {
-    // Handle conditional blocks: {{#if key}} ... {{/if}}
-    html = html.replace(/{{#if\s+(\w+)}}([\s\S]*?){{\/if}}/g, (_, key, content) => {
-        return params[key] ? content : '';
-    });
-
     // Handle loops: {{#each list}} ... {{/each}}
     html = html.replace(/{{#each\s+(\w+)}}([\s\S]*?){{\/each}}/g, (_, key, content) => {
         const arr = params[key];
         if (!Array.isArray(arr)) return '';
         return arr.map(item => inject(content, item)).join('');
+    });
+
+    // Handle conditional blocks: {{#if key}} ... {{/if}}
+    html = html.replace(/{{#if\s+(\w+)}}([\s\S]*?){{\/if}}/g, (_, key, content) => {
+        return params[key] ? content : '';
     });
 
     // Replace {{ key }} with escaped value
@@ -96,3 +97,10 @@ const renderError = (root, error) => {
  * @returns {HTMLElement|null} The element with the given ID, or null if not found.
  */
 const ref = (id) => document.getElementById(id);
+
+window.DOM = {
+    render,
+    renderError,
+    inject,
+    ref
+};

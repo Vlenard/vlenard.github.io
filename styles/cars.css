@@ -1,0 +1,191 @@
+.car-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  /* Car Item */
+  .car-item {
+    list-style: none;
+  }
+  
+  .car-card {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .car-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Car Image */
+  .car-image {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 16px;
+  }
+  
+  /* Car Title */
+  .car-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+  }
+  
+  /* Electric Badge */
+  .car-electric {
+    font-size: 0.875rem;
+    color: #fff;
+    background-color: #0095ff;
+    padding: 4px 8px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+  }
+  
+  /* Car Details */
+  .car-details {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 16px;
+  }
+  
+  .car-details li {
+    font-size: 0.875rem;
+    color: #555;
+    margin-bottom: 8px;
+  }
+  
+  .car-details strong {
+    font-weight: bold;
+    color: #333;
+  }
+  
+  /* Edit Link */
+  .edit-link {
+    color: #007BFF;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  
+  .edit-link:hover {
+    text-decoration: underline;
+  }
+
+/* Car Details Page */
+.car-details-page {
+    display: flex;
+    justify-content: center;
+    padding: 40px;
+    background-color: #f9f9f9;
+  }
+  
+  /* Car Detail Card */
+  .car-detail-card {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .car-detail-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Car Image */
+  .car-detail-image {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 20px;
+  }
+  
+  /* Car Title */
+  .car-detail-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  /* Editable Input Styles */
+  .car-detail-input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #333;
+  }
+  
+  .car-detail-input:focus {
+    border-color: #007BFF;
+    outline: none;
+  }
+  
+  /* Electric Checkbox */
+  .car-electric {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .car-electric-checkbox {
+    margin-left: 10px;
+  }
+  
+  /* Car Details List */
+  .car-detail-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    margin-bottom: 20px;
+    text-align: left;
+    width: 100%;
+  }
+  
+  .car-detail-list li {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 8px;
+  }
+  
+  .car-detail-list strong {
+    font-weight: bold;
+    color: #333;
+  }
+  
+  /* Save Button */
+  .save-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #0095ff;
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .save-button:hover {
+    background-color: #42acf9;
+  }  
