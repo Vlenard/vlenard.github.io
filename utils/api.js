@@ -5,4 +5,4 @@ const baseURL = "https://iit-playground.arondev.hu/api/FJYXPC/";
  * @param {RequestInit} params 
  * @returns {Promise<Response>}
  */
-const api = (url, params) => fetch(baseURL + url, {});
+const api = (url, params) => fetch(baseURL + url, params);

@@ -1,1 +1,39 @@
-create
+<div class="car-add-page">
+  <div class="car-add-card">
+    <h2 class="car-add-title">Add New Car</h2>
+
+    <form id="addCarForm">
+      <div class="form-group">
+        <label for="brand">Brand</label>
+        <input type="text" id="brand" class="car-input" required>
+      </div>
+
+      <div class="form-group">
+        <label for="model">Model</label>
+        <input type="text" id="model" class="car-input" required>
+      </div>
+
+      <div class="form-group checkbox-group">
+        <label for="electric">Electric</label>
+        <input type="checkbox" id="electric">
+      </div>
+
+      <div class="form-group">
+        <label for="fuelUse">Fuel Usage</label>
+        <input type="text" id="fuelUse" class="car-input">
+      </div>
+
+      <div class="form-group">
+        <label for="dayOfCommission">Commission Date</label>
+        <input type="date" id="dayOfCommission" class="car-input">
+      </div>
+
+      <div class="form-group">
+        <label for="owner">Owner</label>
+        <input type="text" id="owner" class="car-input">
+      </div>
+
+      <button id="btn-save" class="submit-button">Add Car</button>
+    </form>
+  </div>
+</div>
