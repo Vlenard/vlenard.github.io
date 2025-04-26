@@ -1,6 +1,10 @@
 /**
  * Handles all internal link clicks with `data-link` attribute.
- * Extracts query params from attributes and navigates using Router.
+ * Extracts custom query parameters from `data-*` attributes (excluding `data-link` and `href`)
+ * and uses the Router to navigate without full page reload.
+ * 
+ * Example:
+ * <a data-link data-page="about" data-id="123">About</a>
  */
 document.addEventListener('click', (e) => {
     const target = e.target.closest("[data-link]");
@@ -18,12 +22,11 @@ document.addEventListener('click', (e) => {
     Router.navigate(params);
 });
 
-
 /**
  * Escapes a string for safe insertion into HTML.
  * Prevents XSS by converting special characters to HTML entities.
  * 
- * @param {string} unsafe - The potentially unsafe string.
+ * @param {string} unsafe - The potentially unsafe string to escape.
  * @returns {string} The escaped HTML-safe string.
  */
 const escapeHtml = (unsafe) => {
@@ -36,33 +39,28 @@ const escapeHtml = (unsafe) => {
 };
 
 /**
- * Injects parameters into an HTML template string.
- * Supports basic templating with if conditions, each loops, and variable replacement.
+ * Injects dynamic parameters into an HTML template string.
+ * Supports basic templating syntax:
  * 
- * Syntax supported:
- * - {{ key }} – variable injection (escaped)
- * - {{#if key}}...{{/if}} – conditional rendering
- * - {{#each list}}...{{/each}} – loop over arrays. nested loops not supported
- * - a[data-link page="name" attr="{{key}}"] generate link
+ * - `{{ key }}` — inserts the escaped value of the given key.
+ * - `{{#if key}}...{{/if}}` — conditionally renders content if key exists and is truthy.
+ * - `{{#each list}}...{{/each}}` — iterates over arrays; supports one level of nesting.
  * 
- * @param {string} html - The HTML template.
+ * @param {string} html - The raw HTML template string.
  * @param {object} [params={}] - Key-value map of parameters to inject.
- * @returns {string} The final HTML string with all parameters injected.
+ * @returns {string} The final HTML string with injected and escaped content.
  */
 const inject = (html, params = {}) => {
-    // Handle loops: {{#each list}} ... {{/each}}
     html = html.replace(/{{#each\s+(\w+)}}([\s\S]*?){{\/each}}/g, (_, key, content) => {
         const arr = params[key];
         if (!Array.isArray(arr)) return '';
         return arr.map(item => inject(content, item)).join('');
     });
 
-    // Handle conditional blocks: {{#if key}} ... {{/if}}
     html = html.replace(/{{#if\s+(\w+)}}([\s\S]*?){{\/if}}/g, (_, key, content) => {
         return params[key] ? content : '';
     });
 
-    // Replace {{ key }} with escaped value
     html = html.replace(/{{\s*(\w+)\s*}}/g, (_, key) => {
         return params[key] !== undefined ? escapeHtml(params[key]) : '';
     });
@@ -71,33 +69,38 @@ const inject = (html, params = {}) => {
 };
 
 /**
- * Renders raw HTML into a DOM element.
+ * Renders raw HTML into a specified DOM element.
  * 
- * @param {HTMLElement} root - The root element where HTML will be injected.
- * @param {string} html - The HTML content to render.
+ * @param {HTMLElement} root - The target element to render into.
+ * @param {string} html - The HTML content to inject.
  */
 const render = (root, html) => {
     root.innerHTML = html;
 };
 
 /**
- * Renders an error message into a DOM element.
+ * Displays an error message inside a DOM element.
+ * The message is escaped to prevent XSS vulnerabilities.
  * 
- * @param {HTMLElement} root - The root element for the error message.
- * @param {string} error - The error message to display.
+ * @param {HTMLElement} root - The element where the error should be shown.
+ * @param {string} error - The raw error message.
  */
 const renderError = (root, error) => {
     root.innerHTML = `<p class="error">${escapeHtml(error)}</p>`;
 };
 
 /**
- * Returns a reference to a DOM element by its ID.
+ * Retrieves a DOM element by its ID.
  * 
- * @param {string} id - The ID of the HTML element.
- * @returns {HTMLElement|null} The element with the given ID, or null if not found.
+ * @param {string} id - The ID of the element to find.
+ * @returns {HTMLElement|null} The element if found, or null otherwise.
  */
 const ref = (id) => document.getElementById(id);
 
+/**
+ * Global DOM utility object for rendering and HTML injection.
+ * @namespace
+ */
 window.DOM = {
     render,
     renderError,

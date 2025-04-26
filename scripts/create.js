@@ -1,31 +1,24 @@
+/**
+ * List of valid car brands for input validation.
+ * @type {string[]}
+ */
 const validCarBrands = [
-    "Toyota",
-    "Honda",
-    "Ford",
-    "Chevrolet",
-    "Volkswagen",
-    "BMW",
-    "Mercedes-Benz",
-    "Audi",
-    "Nissan",
-    "Hyundai",
-    "Kia",
-    "Volvo",
-    "Subaru",
-    "Mazda",
-    "Lexus",
-    "Tesla",
-    "Porsche",
-    "Jeep",
-    "Fiat",
-    "Renault",
-    "Peugeot",
-    "Citroën",
-    "Skoda",
-    "Seat",
-    "Opel"
+    "Toyota", "Honda", "Ford", "Chevrolet", "Volkswagen", "BMW", "Mercedes-Benz", "Audi",
+    "Nissan", "Hyundai", "Kia", "Volvo", "Subaru", "Mazda", "Lexus", "Tesla", "Porsche",
+    "Jeep", "Fiat", "Renault", "Peugeot", "Citroën", "Skoda", "Seat", "Opel"
 ];
 
+/**
+ * Save button event handler.
+ * 
+ * Validates user input from the car creation form:
+ * - Ensures brand and model are provided.
+ * - Checks if the brand is among the accepted list.
+ * - Validates numeric and positive fuel consumption for non-electric cars.
+ * 
+ * Sends the car data via POST request to the `car` API endpoint.
+ * If successful, it displays the new car's ID and resets the form.
+ */
 DOM.ref("btn-save").onclick = async () => {
     const brandInput = DOM.ref('brand');
     const brand = brandInput.value.trim();
@@ -60,17 +53,26 @@ DOM.ref("btn-save").onclick = async () => {
         return;
     }
 
+    /**
+     * @typedef {Object} NewCarData
+     * @property {string} brand - Car brand.
+     * @property {string} model - Car model.
+     * @property {boolean} electric - Whether the car is electric.
+     * @property {string|null} owner - Owner of the car (optional).
+     * @property {string|null} dayOfCommission - Commissioning date (optional).
+     * @property {number} [fuelUse] - Fuel consumption (required if not electric).
+     */
 
-    // Prepare the request body
+    /** @type {NewCarData} */
     const carData = {
-        brand: brand,
-        model: model,
-        electric: electric,
-        owner: owner || null, // Make optional fields null if empty
+        brand,
+        model,
+        electric,
+        owner: owner || null,
         dayOfCommission: dayOfCommission || null
     };
 
-    // Only include fuelUse if it's provided and the car is not electric
+    // Include fuelUse only if required and valid
     if (!electric && fuelUse) {
         carData.fuelUse = parseFloat(fuelUse);
         if (isNaN(carData.fuelUse) || carData.fuelUse <= 0) {
@@ -80,7 +82,6 @@ DOM.ref("btn-save").onclick = async () => {
     }
 
     try {
-        // Make the API call
         const response = await api('car', {
             method: 'POST',
             body: JSON.stringify(carData)
@@ -89,12 +90,10 @@ DOM.ref("btn-save").onclick = async () => {
         const data = await response.json();
 
         if (response.ok) {
-            // Success case - car created
             alert(`Car added successfully with ID: ${data.id}`);
-            // Optionally reset the form
+            // Reset the form after successful submission
             document.querySelector('.car-add-page form').reset();
         } else {
-            // Handle errors
             if (response.status === 400) {
                 alert(`Error: ${data.message}`);
             } else if (response.status === 401) {

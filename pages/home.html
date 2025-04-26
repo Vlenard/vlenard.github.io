@@ -1,13 +1,15 @@
 <ul class="car-list">
     {{#each cars}}
     <li class="car-item">
-        <div class="car-card">
-            <img src="../icons/taxi-front.svg" alt="taxi" class="car-image">
-            <h2 class="car-title">{{brand}} - {{model}}</h2>
+        <div class="card">
+            <div style="display: flex; justify-content: center;">
+                <img src="../icons/taxi-front.svg" alt="taxi" class="card-image">
+            </div>
+            <h2 class="card-title">{{brand}} - {{model}}</h2>
             {{#if electric}}
-            <span class="car-electric">Electric</span>
+            <span style="width: min-content;" class="car-electric">Electric</span>
             {{/if}}
-            <ul class="car-details">
+            <ul class="info-list">
                 <li><strong>Fuel Usage:</strong> {{fuelUse}}</li>
                 <li><strong>Commissioned:</strong> {{dayOfCommission}}</li>
                 <li><strong>Owner:</strong> {{owner}}</li>

@@ -1,23 +1,48 @@
 /**
+ * Router Module
+ * A lightweight client-side router with caching and modular page support.
+ * 
+ * Features:
+ * - In-memory and sessionStorage-based caching
+ * - Custom page handlers
+ * - Automatic script loading per page
+ * - URL parameter management
+ * - History navigation support
+ * 
+ * Usage:
+ * 
+ * ```js
+ * Router.onPage('about', (html, params, hydrate) => {
+ *   render(ref('root'), html);
+ *   hydrate(); // executes page-specific JS
+ * });
+ * 
+ * Router.init(); // start routing
+ * ```
+ */
+
+/**
  * Stores custom page callbacks for specific routes.
  * @type {Map<string, Function>}
  */
 const pageHandlers = new Map();
 
 /**
- * In-memory HTML page cache.
+ * In-memory HTML/JS page cache.
  * @type {Map<string, string>}
  */
 const pageCache = new Map();
 
 /**
- * Enable persistent caching in sessionStorage if true.
- * Useful for production or refresh-safe caching.
+ * Enable persistent caching using sessionStorage.
+ * Set to `true` to persist cache across refreshes.
  * @type {boolean}
  */
 const usePersistentCache = false;
 
-// Listen for browser back/forward navigation
+/**
+ * Listens to browser history events and handles route changes.
+ */
 window.addEventListener('popstate', () => {
     handleRouteChange();
 });
@@ -25,14 +50,16 @@ window.addEventListener('popstate', () => {
 /**
  * Generates a unique cache key for sessionStorage.
  * @param {string} page - The page name.
- * @returns {string}
+ * @param {string} [type='html'] - Type of content ('html' or 'js').
+ * @returns {string} Generated cache key.
  */
 const cacheKey = (page, type = 'html') => `RouterCache:${type}:${page}`;
 
 /**
- * Retrieves a cached HTML page (from memory or sessionStorage).
- * @param {string} page - Page name to retrieve.
- * @returns {string|null}
+ * Retrieves cached page content from memory or sessionStorage.
+ * @param {string} page - Page name.
+ * @param {string} [type='html'] - Type of content.
+ * @returns {string|null} Cached content or `null` if not found.
  */
 const getCachedPage = (page, type = 'html') => {
     if (usePersistentCache) {
@@ -43,9 +70,10 @@ const getCachedPage = (page, type = 'html') => {
 };
 
 /**
- * Caches an HTML page (to memory or sessionStorage).
- * @param {string} page - Page name to cache.
- * @param {string} html - HTML content to cache.
+ * Stores page content in memory or sessionStorage.
+ * @param {string} page - Page name.
+ * @param {string} content - Page HTML/JS to cache.
+ * @param {string} [type='html'] - Type of content.
  */
 const setCachedPage = (page, content, type = 'html') => {
     if (usePersistentCache) {
@@ -56,7 +84,7 @@ const setCachedPage = (page, content, type = 'html') => {
 };
 
 /**
- * Clears all router-related cache.
+ * Clears all router-related cache entries.
  */
 const clearCache = () => {
     if (usePersistentCache) {
@@ -68,7 +96,8 @@ const clearCache = () => {
 };
 
 /**
- * Monkey-patches `history.pushState` and `replaceState` to react to programmatic navigation.
+ * Monkey-patches history.pushState and history.replaceState
+ * to automatically react to programmatic navigation.
  */
 const patchHistoryMethods = () => {
     ['pushState', 'replaceState'].forEach((type) => {
@@ -82,8 +111,8 @@ const patchHistoryMethods = () => {
 };
 
 /**
- * Extracts the URL search parameters as an object.
- * @returns {Object.<string, string>}
+ * Extracts URL query parameters into a plain object.
+ * @returns {Object.<string, string>} Query parameters as key-value pairs.
  */
 const getParams = () => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -95,11 +124,10 @@ const getParams = () => {
 };
 
 /**
- * Navigates to a new route, updating the URL search parameters.
- * By default, removes any unmentioned params unless `options.preserveParams` is true.
+ * Programmatically navigates to a new route, updating the URL.
  * 
- * @param {Object.<string, string>} params - Parameters to update in the URL.
- * @param {{preserveParams?: boolean}} [options={}] - Preserve old params if true.
+ * @param {Object.<string, string>} params - Parameters to set in the query string.
+ * @param {{preserveParams?: boolean}} [options={}] - Whether to keep other query params.
  */
 const navigate = (params = {}, options = {}) => {
     const url = new URL(window.location);
@@ -123,17 +151,20 @@ const navigate = (params = {}, options = {}) => {
 };
 
 /**
- * Registers a callback function for a specific page.
+ * Registers a custom handler for a specific page.
  * 
- * @param {string} pageName - Page name to match against `page` query param.
- * @param {(html: string, params: Object.<string, string>) => void} callback - Callback to run.
+ * @param {string} pageName - Page name to register.
+ * @param {(html: string, params: Object.<string, string>, hydrate: () => void) => void} callback 
+ * Function called with loaded HTML, query params, and script hydration function.
  */
 const onPage = (pageName, callback) => {
     pageHandlers.set(pageName, callback);
 };
 
 /**
- * Handles routing logic: fetches and renders a page, invokes callbacks.
+ * Fetches, caches, and renders a page.
+ * If a handler is registered, it will be called.
+ * Otherwise, default rendering occurs.
  */
 const handleRouteChange = async () => {
     const params = getParams();
@@ -148,21 +179,21 @@ const handleRouteChange = async () => {
             setCachedPage(page, html);
         }
 
-        const hydrate = await loadPageScript(page); // 🔹 Load script early
+        const hydrate = await loadPageScript(page);
 
         if (typeof handler === 'function') {
-            handler(html, params, hydrate); // 🔹 Pass to callback
+            handler(html, params, hydrate);
         } else {
             const root = ref("root") || document.body;
             render(root, inject(html, params));
-            hydrate(); // 🔹 Execute if no custom callback
+            hydrate();
         }
     } catch (err) {
         console.error(`Failed to load page: pages/${page}.html`, err);
         const errorHtml = `<h2>Error loading page: ${page}</h2>`;
 
         if (typeof handler === 'function') {
-            handler(errorHtml, params, () => { }); // 🔹 Fallback no-op
+            handler(errorHtml, params, () => {});
         } else {
             const root = ref("root") || document.body;
             render(root, errorHtml);
@@ -171,11 +202,10 @@ const handleRouteChange = async () => {
 };
 
 /**
- * Loads and caches the corresponding JS file for a page.
- * Returns a function that executes the script when called.
- *
+ * Loads and caches a JS script for a page.
+ * 
  * @param {string} page - Page name.
- * @returns {Promise<() => void>} - A function that runs the JS, or no-op if not found.
+ * @returns {Promise<() => void>} Hydration function that executes the JS.
  */
 const loadPageScript = async (page) => {
     let jsCode = getCachedPage(page, 'js');
@@ -191,6 +221,7 @@ const loadPageScript = async (page) => {
             console.warn(`JS load failed for page: ${page}`, err);
         }
     }
+
     return () => {
         if (jsCode) {
             try {
@@ -203,14 +234,24 @@ const loadPageScript = async (page) => {
 };
 
 /**
- * Initializes the router: sets up history patching and triggers the first route.
+ * Initializes the router.
+ * Should be called once on app startup.
  */
 const init = () => {
     patchHistoryMethods();
     handleRouteChange();
 };
 
-// Expose Router API globally
+/**
+ * Global Router API
+ * 
+ * @namespace
+ * @property {Function} init - Initializes the router.
+ * @property {Function} navigate - Navigates to a new page.
+ * @property {Function} getParams - Gets current URL query parameters.
+ * @property {Function} onPage - Registers a page-specific handler.
+ * @property {Function} clearCache - Clears all cached pages.
+ */
 window.Router = {
     init,
     navigate,

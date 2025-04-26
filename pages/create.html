@@ -1,39 +1,39 @@
-<div class="car-add-page">
-  <div class="car-add-card">
-    <h2 class="car-add-title">Add New Car</h2>
+<div class="car-editor">
+  <div class="card add-card" style="width: 25rem;">
+    <h2 class="card-title">Add New Car</h2>
 
-    <form id="addCarForm">
+    <form id="addCarForm" style="width: 100%;">
       <div class="form-group">
         <label for="brand">Brand</label>
-        <input type="text" id="brand" class="car-input" required>
+        <input type="text" id="brand" class="input-field" required>
       </div>
 
       <div class="form-group">
         <label for="model">Model</label>
-        <input type="text" id="model" class="car-input" required>
+        <input type="text" id="model" class="input-field" required>
       </div>
 
       <div class="form-group checkbox-group">
         <label for="electric">Electric</label>
-        <input type="checkbox" id="electric">
+        <input type="checkbox" id="electric" class="car-electric-checkbox">
       </div>
 
       <div class="form-group">
         <label for="fuelUse">Fuel Usage</label>
-        <input type="text" id="fuelUse" class="car-input">
+        <input type="text" id="fuelUse" class="input-field">
       </div>
 
       <div class="form-group">
         <label for="dayOfCommission">Commission Date</label>
-        <input type="date" id="dayOfCommission" class="car-input">
+        <input type="date" id="dayOfCommission" class="input-field">
       </div>
 
       <div class="form-group">
         <label for="owner">Owner</label>
-        <input type="text" id="owner" class="car-input">
+        <input type="text" id="owner" class="input-field">
       </div>
 
-      <button id="btn-save" class="submit-button">Add Car</button>
+      <button id="btn-save" class="btn-primary">Add Car</button>
     </form>
   </div>
 </div>

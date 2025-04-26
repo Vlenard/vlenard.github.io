@@ -1,37 +1,37 @@
-<div class="car-details-page">
-  <div class="car-detail-card">
-    <img src="../icons/taxi-front.svg" alt="taxi" class="car-detail-image">
+<div class="car-editor">
+  <div class="card add-card" style="width: 25rem;">
+    
+    <img src="../icons/taxi-front.svg" alt="taxi" class="card-image--large car-detail-image">
 
-    <input type="text" value="{{id}}" id="id" hidden>
+    <form style="width: 100%;">
+      <div class="form-group">
+        <label for="brand">Brand</label>
+        <input type="text" class="input-field" value="{{brand}} - {{model}}" id="carModel" required>
+      </div>
 
-    <h2 class="car-detail-title">
-      <input type="text" class="car-detail-input" value="{{brand}} - {{model}}" id="carModel">
-    </h2>
+      <div class="form-group checkbox-group">
+        <label for="electric">Electric</label>
+        <input type="checkbox" class="car-electric-checkbox" {{#if electric}}checked{{/if}} id="electric">
+      </div>
 
-    <div class="car-electric">
-      <label for="electricCar">Electric</label>
-      <input type="checkbox" id="electricCar" class="car-electric-checkbox" {{#if electric}}checked{{/if}}>
-    </div>
+      <div class="form-group">
+        <label for="fuelUse">Fuel Usage</label>
+        <input type="text" class="input-field" value="{{fuelUse}}" id="fuelUse">
+      </div>
 
-    <ul class="car-detail-list">
-      <li>
-        <strong>Fuel Usage:</strong>
-        <input type="text" class="car-detail-input" value="{{fuelUse}}" id="fuelUse">
-      </li>
-      <li>
-        <strong>Commissioned On:</strong>
-        <input type="date" class="car-detail-input" value="{{dayOfCommission}}" id="commissionDate">
-      </li>
-      <li>
-        <strong>Owner:</strong>
-        <input type="text" class="car-detail-input" value="{{owner}}" id="owner">
-      </li>
-    </ul>
+      <div class="form-group">
+        <label for="dayOfCommission">Commission Date</label>
+        <input type="date" class="input-field" value="{{dayOfCommission}}" id="commissionDate">
+      </div>
 
-    <div class="car-actions">
-      <button data-link data-page="" class="save-button">Back</button>
-      <button class="save-button" id="btn-delete">Delete</button>
-      <button class="save-button" id="btn-save">Save</button>
-    </div>
+      <div class="form-group">
+        <label for="owner">Owner</label>
+        <input type="text" class="input-field" value="{{owner}}" id="owner">
+      </div>
+
+      <button data-link data-page="" class="btn-primary">Back</button>
+      <button class="btn-primary" id="btn-delete">Delete</button>
+      <button class="btn-primary" id="btn-save">Save</button>
+    </form>
   </div>
 </div>

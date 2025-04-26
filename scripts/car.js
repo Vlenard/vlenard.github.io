@@ -1,105 +1,107 @@
+/**
+ * List of valid car brands for input validation.
+ * Used to ensure only accepted brands are submitted.
+ * @type {string[]}
+ */
 const validCarBrands = [
-    "Toyota",
-    "Honda",
-    "Ford",
-    "Chevrolet",
-    "Volkswagen",
-    "BMW",
-    "Mercedes-Benz",
-    "Audi",
-    "Nissan",
-    "Hyundai",
-    "Kia",
-    "Volvo",
-    "Subaru",
-    "Mazda",
-    "Lexus",
-    "Tesla",
-    "Porsche",
-    "Jeep",
-    "Fiat",
-    "Renault",
-    "Peugeot",
-    "Citroën",
-    "Skoda",
-    "Seat",
-    "Opel"
+    "Toyota", "Honda", "Ford", "Chevrolet", "Volkswagen", "BMW", "Mercedes-Benz", "Audi",
+    "Nissan", "Hyundai", "Kia", "Volvo", "Subaru", "Mazda", "Lexus", "Tesla", "Porsche",
+    "Jeep", "Fiat", "Renault", "Peugeot", "Citroën", "Skoda", "Seat", "Opel"
 ];
 
+/**
+ * Parses a combined "Brand - Model" string into separate parts.
+ * 
+ * @param {string} combinedInput - The input string in format "Brand - Model".
+ * @returns {{ brand: string, model: string }} Object containing `brand` and `model`.
+ */
 const parseBrandModel = (combinedInput) => {
     const parts = combinedInput.split('-').map(part => part.trim());
     return {
-      brand: parts[0] || '',
-      model: parts.slice(1).join('-') || ''
+        brand: parts[0] || '',
+        model: parts.slice(1).join('-') || ''
     };
-  }
+};
 
+/**
+ * Save button event handler. Validates and submits the form for saving car data.
+ * 
+ * Validates:
+ * - Combined "Brand - Model" field.
+ * - Brand is from accepted list.
+ * - Fuel usage (if not electric) is a valid positive number.
+ * 
+ * Submits data via PUT request to the `car` API endpoint.
+ */
 DOM.ref("btn-save").onclick = async () => {
-    // Get the car ID
-    const id = document.getElementById('id').value;
+    const id = parseInt(DOM.ref("id").value);
 
-    // Parse brand and model from the combined input
-    const carModelInput = document.getElementById('carModel').value;
+    const carModelInput = DOM.ref("carModel").value;
     const { brand, model } = parseBrandModel(carModelInput);
 
-    // Get other form values
-    const electric = document.getElementById('electricCar').checked;
-    const fuelUse = document.getElementById('fuelUse').value;
-    const dayOfCommission = document.getElementById('commissionDate').value;
-    const owner = document.getElementById('owner').value;
+    const electric = DOM.ref('electricCar').checked;
+    const fuelUse = DOM.ref('fuelUse').value;
+    const dayOfCommission = DOM.ref('commissionDate').value;
+    const owner = DOM.ref('owner').value;
 
-    // Validate inputs
+    // Validate brand and model format
     if (!brand || !model) {
         alert('Both brand and model are required (format: Brand - Model)');
-        document.getElementById('carModel').focus();
+        DOM.ref('carModel').focus();
         return;
     }
 
-    // Check if brand is valid
+    // Validate brand against list
     const isValidBrand = validCarBrands.some(validBrand =>
         validBrand.toLowerCase() === brand.toLowerCase()
     );
 
     if (!isValidBrand) {
         alert(`Please enter a valid car brand. Some valid brands include: ${validCarBrands.slice(0, 5).join(', ')}...`);
-        document.getElementById('carModel').focus();
+        DOM.ref('carModel').focus();
         return;
     }
 
-    // Validate fuel use if not electric
+    // Validate fuel consumption for non-electric cars
     let numericFuelUse = null;
     if (!electric && fuelUse) {
         numericFuelUse = parseFloat(fuelUse);
         if (isNaN(numericFuelUse)) {
             alert('Fuel consumption must be a number');
-            document.getElementById('fuelUse').focus();
+            DOM.ref('fuelUse').focus();
             return;
         }
         if (numericFuelUse <= 0) {
             alert('Fuel consumption should be greater than 0');
-            document.getElementById('fuelUse').focus();
+            DOM.ref('fuelUse').focus();
             return;
         }
     }
 
-    // Prepare the request body
+    /**
+     * @typedef {Object} CarData
+     * @property {number} id - Car ID.
+     * @property {string} brand - Car brand.
+     * @property {string} model - Car model.
+     * @property {boolean} electric - Whether the car is electric.
+     * @property {string|null} owner - Owner's name (optional).
+     * @property {string|null} dayOfCommission - Commissioning date (optional).
+     * @property {number} fuelUse - Fuel consumption (0 if electric).
+     */
+
+    /** @type {CarData} */
     const carData = {
         id,
         brand,
         model,
         electric,
         owner: owner || null,
-        dayOfCommission: dayOfCommission || null
+        dayOfCommission: dayOfCommission || null,
+        fuelUse: electric ? 0.0 : numericFuelUse
     };
 
-    // Only include fuelUse if it's provided and the car is not electric
-    if (!electric && fuelUse) {
-        carData.fuelUse = numericFuelUse;
-    }
-
     try {
-        // Make the PUT request
-        console.log(JSON.stringify(carData));
+        // Submit data via PUT
         
         const response = await api('car', {
             method: 'PUT',
@@ -109,11 +111,9 @@ DOM.ref("btn-save").onclick = async () => {
         const data = await response.json();
 
         if (response.ok) {
-            // Success case - car updated
             alert('Car details saved successfully!');
-            // Optionally redirect or refresh data
         } else {
-            // Handle errors
+            // Handle known error codes
             switch (response.status) {
                 case 400:
                     alert(`Validation error: ${data.message}`);
@@ -134,6 +134,11 @@ DOM.ref("btn-save").onclick = async () => {
     }
 };
 
+/**
+ * Delete button event handler.
+ * Sends a DELETE request to remove a car entry by ID.
+ * Redirects to the home page after operation.
+ */
 DOM.ref("btn-delete").onclick = async () => {
     const id = DOM.ref("id").value;
 
@@ -145,7 +150,6 @@ DOM.ref("btn-delete").onclick = async () => {
         const data = await response.json();
 
         if (!response.ok) {
-            // Handle error responses
             if (response.status === 400) {
                 alert(`Error: ${data.message || "Invalid data provided."}`);
             } else if (response.status === 401) {
@@ -156,7 +160,6 @@ DOM.ref("btn-delete").onclick = async () => {
                 alert("Failed to delete car. Please try again.");
             }
         }
-
     } catch (error) {
         alert('Error deleting car:', error);
     }
