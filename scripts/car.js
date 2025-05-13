@@ -6,7 +6,7 @@
 const validCarBrands = [
     "Toyota", "Honda", "Ford", "Chevrolet", "Volkswagen", "BMW", "Mercedes-Benz", "Audi",
     "Nissan", "Hyundai", "Kia", "Volvo", "Subaru", "Mazda", "Lexus", "Tesla", "Porsche",
-    "Jeep", "Fiat", "Renault", "Peugeot", "Citroën", "Skoda", "Seat", "Opel"
+    "Jeep", "Fiat", "Renault", "Peugeot", "Citroën", "Skoda", "Seat", "Opel", "Mitsubishi"
 ];
 
 /**
@@ -39,7 +39,7 @@ DOM.ref("btn-save").onclick = async () => {
     const carModelInput = DOM.ref("carModel").value;
     const { brand, model } = parseBrandModel(carModelInput);
 
-    const electric = DOM.ref('electricCar').checked;
+    const electric = DOM.ref('electric').checked;
     const fuelUse = DOM.ref('fuelUse').value;
     const dayOfCommission = DOM.ref('commissionDate').value;
     const owner = DOM.ref('owner').value;

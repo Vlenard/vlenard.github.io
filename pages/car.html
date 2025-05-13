@@ -3,7 +3,9 @@
     
     <img src="../icons/taxi-front.svg" alt="taxi" class="card-image--large car-detail-image">
 
-    <form style="width: 100%;">
+    <div style="width: 100%;">
+      <input value="{{id}}" id="id" hidden/>
+
       <div class="form-group">
         <label for="brand">Brand</label>
         <input type="text" class="input-field" value="{{brand}} - {{model}}" id="carModel" required>
@@ -32,6 +34,6 @@
       <button data-link data-page="" class="btn-primary">Back</button>
       <button class="btn-primary" id="btn-delete">Delete</button>
       <button class="btn-primary" id="btn-save">Save</button>
-    </form>
+    </div>
   </div>
 </div>

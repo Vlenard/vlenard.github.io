@@ -9,12 +9,17 @@ const root = ref("root");
  * @type {HTMLElement}
  */
 const btnCreate = ref("btn-create");
+const btnSearch = ref("btn-search");
 
 /**
  * Event handler for navigating to the 'create' page.
  */
 btnCreate.onclick = () => {
   Router.navigate({ page: "create" });
+};
+
+btnSearch.onclick = () => {
+  Router.navigate({ page: "search" });
 };
 
 /**
@@ -55,6 +60,17 @@ Router.onPage('car', async (html, { id }, hydrate) => {
     hydrate();
   } catch (error) {
     renderError(root, `Error while loading car with id ${id}`);
+  }
+});
+
+
+Router.onPage('search', async (html, {}, hydrate) => {
+  try {
+    render(root, html);
+    hydrate();
+  } catch (error) {
+    renderError(root, `Error while loading search`);
+    console.log(error);
   }
 });
 
